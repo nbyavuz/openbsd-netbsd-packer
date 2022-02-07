@@ -1,8 +1,14 @@
 #!/bin/ksh
 
+# Patch
+syspatch
+
 # Network
 rm /etc/hostname.*
 echo 'dhcp' > /etc/hostname.vio0
+
+# Enable multithreading
+echo 'hw.smt=1' > /etc/sysctl.conf
 
 # Serial console
 echo 'stty com0 115200' > /etc/boot.conf
