@@ -1,3 +1,7 @@
+variable "account_file" { type = string }
+variable "bucket" { type = string }
+variable "project_id" { type = string }
+
 # "timestamp" template function replacement
 locals {
 
@@ -48,11 +52,11 @@ build {
   sources = ["source.virtualbox-iso.vbox-gce-builder"]
 
   provisioner "shell" {
-    script = "scripts/prep-postgres.sh"
+    script = "scripts/openbsd-prep-postgres.sh"
   }
 
   provisioner "shell" {
-    script = "scripts/prep-gce.sh"
+    script = "scripts/openbsd-prep-gce.sh"
   }
 
   provisioner "file" {
@@ -82,10 +86,11 @@ build {
     }
 
     post-processor "googlecompute-import" {
-      bucket            = "template"
-      image_family      = "template"
-      image_name        = "template"
-      project_id        = "template"
+      account_file      = "${var.account_file}"
+      bucket            = "${var.bucket}"
+      image_family      = "openbsd70"
+      image_name        = "pg-openbsd70-packer"
+      project_id        = "${var.project_id}"
     }
   }
 }

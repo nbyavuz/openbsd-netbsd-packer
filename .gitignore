@@ -14,4 +14,7 @@ output*/
 *.json
 
 # Variables
-vars.yaml
+variables.pkr.hcl
+
+# Google Account file
+gaccount.json
