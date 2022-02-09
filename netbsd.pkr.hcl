@@ -21,12 +21,10 @@ source "virtualbox-iso" "vbox-gce-builder" {
       "<down><enter><wait200ms>",
       "<enter><wait200ms>",
       "<down><enter><wait3s>",
-      "<enter><wait200ms>",
+      "b<enter><wait200ms>x<enter><wait200ms>",
       "<down><enter><wait200ms>",
       "<enter><wait50s>",
       "<enter><wait200ms>",
-      "a<enter><wait200ms><enter><wait200ms><enter><wait200ms><enter><wait200ms><wait15s>",
-      "<enter><wait200ms><enter><wait200ms><enter><wait200ms>",
       "g<enter><wait200ms>",
       "o<enter><wait200ms>packer<enter><wait200ms><enter><wait200ms>b<enter><wait200ms>",
       "packer<enter><wait200ms>packer<enter><wait200ms>packer<enter><wait3s>",
@@ -40,6 +38,7 @@ source "virtualbox-iso" "vbox-gce-builder" {
       "sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config<enter><wait100ms>",
       "sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/g' /etc/ssh/sshd_config<enter><wait100ms>",
       "sed -i 's/UsePam yes/UsePam no/g' /etc/ssh/sshd_config<enter><wait100ms>",
+      "echo '/sbin/dhcpcd' > /etc/rc.local<enter><wait100ms>",
       "reboot<enter>"
     ]
 
@@ -70,11 +69,6 @@ build {
 
   provisioner "shell" {
     script = "scripts/netbsd-prep-postgres.sh"
-  }
-
-  provisioner "file" {
-    source = "files/ttys"
-    destination = "/etc/ttys"
   }
 
   provisioner "shell" {
