@@ -1,6 +1,7 @@
 variable "account_file" { type = string }
 variable "bucket" { type = string }
 variable "project_id" { type = string }
+variable "image_date" { type = string }
 
 # "timestamp" template function replacement
 locals {
@@ -59,7 +60,7 @@ source "virtualbox-iso" "vbox-gce-builder" {
   ssh_username            = "root"
   ssh_password            = "packer"
   ssh_port                = 22
-  ssh_wait_timeout        = "10000s"
+  ssh_wait_timeout        = "300s"
   vm_name                 = "netbsd92-gce.x86-64"
 }
 
@@ -73,6 +74,15 @@ build {
 
   provisioner "shell" {
     script = "scripts/netbsd-prep-gce.sh"
+  }
+
+  provisioner "file" {
+    source = "files/netbsd-rc.local.sh"
+    destination = "/etc/rc.local"
+  }
+
+  provisioner "shell" {
+    inline = ["chmod 744 /etc/rc.local"]
   }
 
   post-processors {
@@ -99,8 +109,8 @@ build {
     post-processor "googlecompute-import" {
       account_file      = "${var.account_file}"
       bucket            = "${var.bucket}"
-      image_family      = "netbsd92"
-      image_name        = "pg-netbsd92-packer"
+      image_family      = "pg-ci-netbsd-9-2"
+      image_name        = "pg-netbsd-9-2-${var.image_date}"
       project_id        = "${var.project_id}"
     }
   }

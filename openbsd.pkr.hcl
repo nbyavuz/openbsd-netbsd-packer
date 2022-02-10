@@ -1,6 +1,7 @@
 variable "account_file" { type = string }
 variable "bucket" { type = string }
 variable "project_id" { type = string }
+variable "image_date" { type = string }
 
 # "timestamp" template function replacement
 locals {
@@ -43,7 +44,7 @@ source "virtualbox-iso" "vbox-gce-builder" {
   ssh_password            = "packer"
   ssh_port                = 22
   ssh_username            = "root"
-  ssh_wait_timeout        = "10000s"
+  ssh_wait_timeout        = "300s"
   vm_name                 = "openbsd70-gce.x86-64"
 }
 
@@ -60,8 +61,12 @@ build {
   }
 
   provisioner "file" {
-    source = "files/rc.local.sh"
+    source = "files/openbsd-rc.local.sh"
     destination = "/etc/rc.local"
+  }
+
+  provisioner "shell" {
+    inline = ["chmod 744 /etc/rc.local"]
   }
 
   post-processors {
@@ -88,8 +93,8 @@ build {
     post-processor "googlecompute-import" {
       account_file      = "${var.account_file}"
       bucket            = "${var.bucket}"
-      image_family      = "openbsd70"
-      image_name        = "pg-openbsd70-packer"
+      image_family      = "pg-ci-openbsd-7-0"
+      image_name        = "pg-openbsd-7-0-${var.image_date}"
       project_id        = "${var.project_id}"
     }
   }

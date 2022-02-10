@@ -6,6 +6,7 @@ export PKG_PATH && \
 /usr/pkg/bin/pkgin update && \
 mkdir /usr/pkg/pgsql && \
 /usr/pkg/bin/pkgin -y install \
+curl \
 vim \
 git \
 mozilla-rootcerts \
@@ -22,6 +23,4 @@ libxslt \
 tcl && \
 /usr/pkg/sbin/mozilla-rootcerts install && \
 find /usr/pkg/lib/ -name libperl.so -exec ln -sf '{}' /usr/pkg/lib/libperl.so ';' && \
-find /usr/pkg/bin -name python3.8 -exec ln -sf '{}' /usr/pkg/bin/python3 ';' && \
-/sbin/sysctl -w kern.ipc.semmni=2048 && \
-/sbin/sysctl -w kern.ipc.semmns=32768
+find /usr/pkg/bin -name python3.8 -exec ln -sf '{}' /usr/pkg/bin/python3 ';'

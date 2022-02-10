@@ -31,12 +31,13 @@ then
     echo "$instance_keys" | while read line
     do
         username="$(echo $line | cut -d: -f1)"
-        user_key="$(echo $line | cut -d: -f2)"
+        user_key="$(echo $line | cut -d: -f2-)"
         key_comment="$(echo $line | awk '{print $NF}')"
 
         if [ "$username" != "" ]
         then
             mkdir -p /home/${username}/.ssh
+            touch /home/${username}/.ssh/authorized_keys
 
             if [ "$(grep -c "$user_key" /home/${username}/.ssh/authorized_keys)" == "0" ]
             then
@@ -75,3 +76,6 @@ then
 else
     echo "Bootstrap: empty curl"
 fi
+
+/sbin/sysctl kern.seminfo.semmni=2048 && \
+/sbin/sysctl kern.seminfo.semmns=32768

@@ -28,6 +28,4 @@ tcl%8.6 \
 \
 login_krb5 \
 openldap-client--gssapi \
-openldap-server--gssapi || true && \
-sysctl kern.seminfo.semmni=2048 && \
-sysctl kern.seminfo.semmns=32768
+openldap-server--gssapi || true
