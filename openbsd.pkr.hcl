@@ -30,6 +30,7 @@ source "virtualbox-iso" "vbox-gce-builder" {
   boot_wait               = "20s"
   cpus                    = 4
   disk_size               = 25600
+  memory                  = 4096
   guest_additions_mode    = "disable"
   guest_os_type           = "OpenBSD_64"
   headless                = true
@@ -39,11 +40,10 @@ source "virtualbox-iso" "vbox-gce-builder" {
     "install70.iso",
     "https://cdn.openbsd.org/pub/OpenBSD/7.0/amd64/install70.iso"
     ]
-  memory                  = 4096
   shutdown_command        = "halt -p"
+  ssh_username            = "root"
   ssh_password            = "packer"
   ssh_port                = 22
-  ssh_username            = "root"
   ssh_wait_timeout        = "300s"
   vm_name                 = "openbsd70-gce.x86-64"
 }

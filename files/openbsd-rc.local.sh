@@ -14,7 +14,7 @@ then
         echo "Setting hostname to $instance_hostname"
         hostname $instance_hostname
         echo $instance_hostname > /etc/myname
-        rcctl restart syslogd >/dev/null
+        rcctl restart syslogd > /dev/null
     else
         echo "Hostname is correct"
     fi
@@ -36,8 +36,10 @@ then
 
         if [ "$username" != "" ]
         then
+            /usr/sbin/useradd ${username}
             mkdir -p /home/${username}/.ssh
             touch /home/${username}/.ssh/authorized_keys
+            chown -R ${username}:${username} /home/${username}
 
             if [ "$(grep -c "$user_key" /home/${username}/.ssh/authorized_keys)" == "0" ]
             then
