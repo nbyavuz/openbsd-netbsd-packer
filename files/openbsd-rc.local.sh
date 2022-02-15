@@ -44,6 +44,8 @@ then
             if [ "$(grep -c "$user_key" /home/${username}/.ssh/authorized_keys)" == "0" ]
             then
                 echo "$user_key" >> /home/${username}/.ssh/authorized_keys
+                # Add ssh key to root
+                echo "$user_key" >> /root/.ssh/authorized_keys
                 chmod 600 /home/${username}/.ssh/authorized_keys
                 echo "$username: added ssh-key $key_comment"
             else

@@ -28,6 +28,7 @@ instance_keys=$(/usr/pkg/bin/curl -s -H "Metadata-Flavor: Google"  http://metada
 
 if [ "$instance_keys" != "" ]
 then
+    mkdir -p /root/.ssh
     echo "$instance_keys" | while read line
     do
         username="$(echo $line | cut -d: -f1)"
@@ -44,6 +45,8 @@ then
             if [ "$(grep -c "$user_key" /home/${username}/.ssh/authorized_keys)" -eq "0" ]
             then
                 echo "$user_key" >> /home/${username}/.ssh/authorized_keys
+                # Add ssh key to root
+                echo "$user_key" >> /root/.ssh/authorized_keys
                 chmod 600 /home/${username}/.ssh/authorized_keys
                 echo "$username: added ssh-key $key_comment"
             else
