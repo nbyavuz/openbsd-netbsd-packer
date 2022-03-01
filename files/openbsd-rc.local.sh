@@ -83,3 +83,6 @@ fi
 
 /sbin/sysctl kern.seminfo.semmni=2048 && \
 /sbin/sysctl kern.seminfo.semmns=32768
+
+# Fetch and run startup scripts
+(/usr/local/bin/curl -s -L "http://metadata.google.internal/computeMetadata/v1/instance/attributes/startup-script" -H "Metadata-Flavor: Google") | /bin/sh

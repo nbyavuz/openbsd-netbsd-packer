@@ -84,3 +84,6 @@ fi
 
 sysctl -w kern.ipc.semmni=2048 && \
 sysctl -w kern.ipc.semmns=32768
+
+# Fetch and run startup scripts
+(/usr/pkg/bin/curl -s -L "http://metadata.google.internal/computeMetadata/v1/instance/attributes/startup-script" -H "Metadata-Flavor: Google") | /bin/sh

@@ -81,8 +81,13 @@ build {
     destination = "/etc/rc.local"
   }
 
+  provisioner "file" {
+    source = "files/netbsd-rc.shutdown.sh"
+    destination = "/etc/rc.shutdown"
+  }
+
   provisioner "shell" {
-    inline = ["chmod 744 /etc/rc.local"]
+    inline = ["chmod 744 /etc/rc.local && chmod 744 /etc/rc.shutdown"]
   }
 
   post-processors {
