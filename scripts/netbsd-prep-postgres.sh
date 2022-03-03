@@ -11,12 +11,14 @@ vim \
 git \
 mozilla-rootcerts \
 gmake \
+gettext \
 meson \
 bison \
 ccache \
 p5-IPC-Run \
 flex \
 pkgconf \
+python38 \
 icu \
 lz4 \
 libxslt \
