@@ -74,6 +74,10 @@ build {
     inline = ["chmod 744 /etc/rc.local && chmod 744 /etc/rc.shutdown"]
   }
 
+  provisioner "shell" {
+    script = "scripts/openbsd-set-cron.sh"
+  }
+
   post-processors {
 
     post-processor "manifest" {
