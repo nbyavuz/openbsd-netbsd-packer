@@ -9,32 +9,32 @@ locals {
   timestamp = regex_replace(timestamp(), "[- TZ:]", "")
 }
 
-source "virtualbox-iso" "vbox-gce-builder" {
+source "qemu" "qemu-gce-builder" {
 
   boot_command            = [
-      "<enter><wait200ms>",
-      "<enter><wait200ms>",
-      "<enter><wait200ms>",
-      "<down><enter><wait200ms>",
-      "<enter><wait200ms>",
-      "<enter><wait200ms>",
-      "<enter><wait200ms>",
-      "<down><enter><wait200ms>",
-      "<enter><wait200ms>",
-      "<down><enter><wait3s>",
-      "b<enter><wait200ms>x<enter><wait200ms>",
-      "<down><enter><wait200ms>",
-      "<enter><wait50s>",
-      "<enter><wait200ms>",
-      "g<enter><wait200ms>",
-      "o<enter><wait200ms>packer<enter><wait200ms><enter><wait200ms>b<enter><wait200ms>",
-      "packer<enter><wait200ms>packer<enter><wait200ms>packer<enter><wait3s>",
-      "d<enter><wait200ms><enter><wait200ms>packer<enter><wait200ms>packer<enter><wait200ms>",
-      "packer<enter><wait3s>",
-      "x<enter><wait200ms>",
       "<enter><wait1s>",
+      "<enter><wait1s>",
+      "<enter><wait1s>",
+      "<down><enter><wait1s>",
+      "<enter><wait1s>",
+      "<enter><wait1s>",
+      "<enter><wait1s>",
+      "<down><enter><wait1s>",
+      "<enter><wait1s>",
+      "<down><enter><wait3s>",
+      "b<enter><wait1s>x<enter><wait1s>",
+      "<down><enter><wait1s>",
+      "<enter><wait50s>",
+      "<enter><wait1s>",
+      "g<enter><wait1s>",
+      "o<enter><wait1s>packer<enter><wait1s><enter><wait1s>b<enter><wait1s>",
+      "packer<enter><wait1s>packer<enter><wait1s>packer<enter><wait3s>",
+      "d<enter><wait1s><enter><wait1s>packer<enter><wait1s>packer<enter><wait1s>",
+      "packer<enter><wait3s>",
+      "x<enter><wait1s>",
+      "<enter><wait3s>",
       "d<enter><wait30s>",
-      "root<enter><wait1s>",
+      "root<enter><wait3s>",
       "packer<enter><wait5s>",
       "sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config<enter><wait100ms>",
       "sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/g' /etc/ssh/sshd_config<enter><wait100ms>",
@@ -46,11 +46,8 @@ source "virtualbox-iso" "vbox-gce-builder" {
   boot_wait               = "20s"
   cpus                    = 4
   disk_size               = 25600
-  memory                  = 4096
-  guest_additions_mode    = "disable"
-  guest_os_type           = "NetBSD_64"
   headless                = true
-  http_directory          = "config"
+  memory                  = 4096
   iso_checksum            = "sha256:5f1bca14c4090122f31713dd86a926f63109dd6fb3c05f9b9b150a78acc8bc7e"
   iso_urls                = [
     "NetBSD-9.2-amd64.iso",
@@ -61,12 +58,14 @@ source "virtualbox-iso" "vbox-gce-builder" {
   ssh_password            = "packer"
   ssh_port                = 22
   ssh_wait_timeout        = "300s"
-  vm_name                 = "netbsd92-gce.x86-64"
+  format                  = "qcow2"
+  vm_name                 = "disk.raw"
+  output_directory        = "output"
 }
 
 build {
 
-  sources = ["source.virtualbox-iso.vbox-gce-builder"]
+  sources = ["source.qemu.qemu-gce-builder"]
 
   provisioner "shell" {
     script = "scripts/netbsd-prep-postgres.sh"
@@ -95,22 +94,6 @@ build {
   }
 
   post-processors {
-
-    post-processor "manifest" {
-      output     = "output/manifest.json"
-      strip_path = true
-    }
-
-    post-processor "shell-local" {
-      inline = [
-        "jq -r '.builds[] | (.name + \"/\" + .files[].name)' output/manifest.json | grep '\\.vmdk$' > output/disk-path", "if [ $(wc -l < output/disk-path) -gt 1 ]; then exit 1; fi", "qemu-img convert -f vmdk -O raw \"output-$(cat output/disk-path)\" output/disk.raw", "rm output/manifest.json output/disk-path"
-      ]
-    }
-
-    post-processor "artifice" {
-      files = ["output/disk.raw"]
-    }
-
     post-processor "compress" {
       output = "output/netbsd92.tar.gz"
     }

@@ -9,7 +9,7 @@ locals {
   timestamp = regex_replace(timestamp(), "[- TZ:]", "")
 }
 
-source "virtualbox-iso" "vbox-gce-builder" {
+source "qemu" "qemu-gce-builder" {
 
   boot_command            = [
     "S<enter><wait>",
@@ -28,13 +28,10 @@ source "virtualbox-iso" "vbox-gce-builder" {
     ]
 
   boot_wait               = "20s"
-  cpus                    = 4
+  cpus                    = 2
   disk_size               = 25600
-  memory                  = 4096
-  guest_additions_mode    = "disable"
-  guest_os_type           = "OpenBSD_64"
+  memory                  = 1024
   headless                = true
-  http_directory          = "config"
   iso_checksum            = "sha256:1882f9a23c9800e5dba3dbd2cf0126f552605c915433ef4c5bb672610a4ca3a4"
   iso_urls                = [
     "install70.iso",
@@ -45,12 +42,14 @@ source "virtualbox-iso" "vbox-gce-builder" {
   ssh_password            = "packer"
   ssh_port                = 22
   ssh_wait_timeout        = "300s"
-  vm_name                 = "openbsd70-gce.x86-64"
+  format                  = "raw"
+  vm_name                 = "disk.raw"
+  output_directory        = "output"
 }
 
 build {
 
-  sources = ["source.virtualbox-iso.vbox-gce-builder"]
+  sources = ["source.qemu.qemu-gce-builder"]
 
   provisioner "shell" {
     script = "scripts/openbsd-prep-postgres.sh"
@@ -79,22 +78,6 @@ build {
   }
 
   post-processors {
-
-    post-processor "manifest" {
-      output     = "output/manifest.json"
-      strip_path = true
-    }
-
-    post-processor "shell-local" {
-      inline = [
-        "jq -r '.builds[] | (.name + \"/\" + .files[].name)' output/manifest.json | grep '\\.vmdk$' > output/disk-path", "if [ $(wc -l < output/disk-path) -gt 1 ]; then exit 1; fi", "qemu-img convert -f vmdk -O raw \"output-$(cat output/disk-path)\" output/disk.raw", "rm output/manifest.json output/disk-path"
-      ]
-    }
-
-    post-processor "artifice" {
-      files = ["output/disk.raw"]
-    }
-
     post-processor "compress" {
       output = "output/openbsd70.tar.gz"
     }

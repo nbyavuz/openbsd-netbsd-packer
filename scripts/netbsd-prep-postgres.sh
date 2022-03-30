@@ -1,5 +1,7 @@
 #!/bin/ksh
 
+set -x
+
 PKG_PATH="http://cdn.NetBSD.org/pub/pkgsrc/packages/NetBSD/$(uname -p)/$(uname -r|cut -f '1 2' -d.)/All/" && \
 export PKG_PATH && \
 /usr/sbin/pkg_add pkgin && \
